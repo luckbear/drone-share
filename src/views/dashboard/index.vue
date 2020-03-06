@@ -1,30 +1,35 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
+    <main-map />
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters } from "vuex";
+import MainMap from "../map/MainMap";
+import ProviderInfo from "../infolist/ProviderInfo";
 
 export default {
-  name: 'Dashboard',
+  name: "Dashboard",
+  components: {
+    MainMap,
+    ProviderInfo
+  },
+  data() {
+    return {
+      activeName: "provider"
+    };
+  },
   computed: {
-    ...mapGetters([
-      'name'
-    ])
+    ...mapGetters(["name"])
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 .dashboard {
   &-container {
-    margin: 30px;
-  }
-  &-text {
-    font-size: 30px;
-    line-height: 46px;
+    height: calc(100vh - 50px);
   }
 }
 </style>

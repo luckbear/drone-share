@@ -1,20 +1,20 @@
 <template>
   <section class="app-main">
     <transition name="fade-transform" mode="out-in">
-      <router-view :key="key" />
+      <router-view :key="key" class="view-page" />
     </transition>
   </section>
 </template>
 
 <script>
 export default {
-  name: 'AppMain',
+  name: "AppMain",
   computed: {
     key() {
-      return this.$route.path
+      return this.$route.path;
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -25,7 +25,10 @@ export default {
   position: relative;
   overflow: hidden;
 }
-.fixed-header+.app-main {
+.view-page {
+  height: calc(100vh - 50px);
+}
+.fixed-header + .app-main {
   padding-top: 50px;
 }
 </style>
