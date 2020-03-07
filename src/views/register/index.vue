@@ -1,6 +1,14 @@
 <template>
-  <div class="container">
-    <el-form label-width="120px" size="small" :model="form" :rules="rules" status-icon ref="form">
+  <div class="register-container">
+    <el-form
+      label-width="120px"
+      size="small"
+      :model="form"
+      :rules="rules"
+      status-icon
+      ref="form"
+      class="register-form"
+    >
       <el-form-item label="注册类型">
         <el-radio v-model="registerType" label="company">公司身份注册</el-radio>
         <el-radio v-model="registerType" label="person">个人身份注册</el-radio>
@@ -60,10 +68,10 @@
           </div>
         </el-form-item>
       </template>
-      <div>
-        <el-button class="submit-btn" type="primary" @click="submitInfo('form')">提交注册</el-button>
-      </div>
     </el-form>
+    <div>
+      <el-button class="submit-btn" type="primary" @click="submitInfo('form')">提交注册</el-button>
+    </div>
     <div class="tips">
       <span v-if="registerType =='company'">*登陆后在个人中心更改公司信息*</span>
       <span v-else>*登陆后可以在个人中心添加公司信息*</span>
@@ -92,11 +100,14 @@ export default {
       }
     };
     const validateRePassword = (rule, value, callback) => {
-      if (value == "") {
-        callback(new Error("请输入重复密码"));
-      }
+      // if (value == "") {
+      //   callback(new Error("请输入重复密码"));
+      // }
+
       if (value != this.form.password) {
         callback(new Error("两次输入密码不一致"));
+      } else {
+        callback();
       }
     };
     const validateCompany = (rule, value, callback) => {};
@@ -118,7 +129,7 @@ export default {
         businessFields: [],
         droneTypes: { 多旋翼: 0, 固定翼: 0, 垂直起降: 0 },
         droneUsages: [],
-        driverGrades: { 视距内等级: 0, 超视距等级: 0, 教员等级: 0 }
+        driverLicenceSource: { AOPA: 0, UTC: 0, ASFC: 0 }
       },
       rules: {
         userName: [
@@ -137,7 +148,6 @@ export default {
         rePassword: [
           {
             required: true,
-            message: "请重复输入密码",
             trigger: "blur",
             validator: validateRePassword
           }
@@ -159,7 +169,7 @@ export default {
     submitInfo(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert("submit!");
+          this.$emit("closeCurrentDialog", this.form.userName);
         } else {
           console.log("error submit!!");
           return false;
@@ -255,8 +265,9 @@ export default {
 </style>
 
 <style lang="scss" scoped>
-.container {
+.register-container {
   padding-bottom: 1px;
+
   .el-input,
   .el-autocomplete {
     width: 300px;

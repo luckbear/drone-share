@@ -95,7 +95,7 @@ export const constantRoutes = [
         path: "index",
         name: "Form",
         component: () => import("@/views/form/index"),
-        meta: { title: "信息发布", icon: "form" }
+        meta: { title: "信息发布", icon: "form", isLogin: true }
       }
     ]
   },
@@ -107,7 +107,7 @@ export const constantRoutes = [
         path: "index",
         name: "User",
         component: () => import("@/views/user/index"),
-        meta: { title: "个人中心", icon: "user" }
+        meta: { title: "个人中心", icon: "user", isLogin: true }
       }
     ]
   },

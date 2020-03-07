@@ -23,9 +23,15 @@ import {
   LTileLayer,
   LFeatureGroup,
   LGeoJson
-} from 'vue2-leaflet'
-import Vue from 'vue'
+} from "vue2-leaflet";
+import Vue from "vue";
 export default {
+  props: {
+    isMain: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     LMap,
     LControlLayers,
@@ -43,35 +49,40 @@ export default {
       },
       tianditu: [
         {
-          name: 'tianditu',
+          name: "tianditu",
           visible: true,
           url:
-            'https://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e'
+            "https://t0.tianditu.gov.cn/vec_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=vec&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e"
         },
         {
-          name: 'tianditu_label',
+          name: "tianditu_label",
           visible: true,
           url:
-            'https://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e'
+            "https://t0.tianditu.gov.cn/cva_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=cva&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e"
         }
       ],
       satellite: {
-        name: 'satellite',
+        name: "satellite",
         url:
-          'https://t2.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e'
+          "https://t2.tianditu.gov.cn/img_w/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=img&STYLE=default&TILEMATRIXSET=w&FORMAT=tiles&TILECOL={x}&TILEROW={y}&TILEMATRIX={z}&tk=1902c209c7a7480dfb962751b839b91e"
       }
-    }
+    };
   },
 
   methods: {
     mapReady(map) {
-      Vue.prototype.$map = map
+      if (this.isMain) {
+        Vue.prototype.$map = map;
+      }
+      this.$emit("mapReady", map);
     },
     layerControlReady(e) {
-      Vue.prototype.$layerControl = e
+      if (this.isMain) {
+        Vue.prototype.$layerControl = e;
+      }
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

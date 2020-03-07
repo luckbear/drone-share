@@ -33,11 +33,12 @@
     <el-dialog
       title="注册账户"
       :visible.sync="registerVisible"
+      :close-on-click-modal="false"
       v-if="registerVisible"
-      top="10vh"
-      width="40%"
+      width="50%"
+      top="0"
     >
-      <register></register>
+      <register @closeCurrentDialog="closeCurrentDialog"></register>
     </el-dialog>
   </div>
 </template>
@@ -68,6 +69,22 @@ export default {
     },
     openLogin() {
       this.loginVisible = true;
+    },
+    closeCurrentDialog(e) {
+      this.registerVisible = false;
+      this.$confirm(
+        `注册成功!请牢记您的用户名："${e}", 是否进行登陆?`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "success"
+        }
+      )
+        .then(() => {
+          this.loginVisible = true;
+        })
+        .catch(() => {});
     }
   }
 };
@@ -108,6 +125,12 @@ export default {
       width: 25px;
       height: 25px;
       cursor: pointer;
+    }
+    a {
+      &:hover {
+        color: rgb(250, 243, 243);
+        text-decoration: underline;
+      }
     }
   }
 }

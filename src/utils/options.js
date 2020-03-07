@@ -44,11 +44,16 @@ const companySource = [
     label: "无人机数量",
     value: [{ 多旋翼: 0 }, { 固定翼: 0 }, { 垂直起降: 0 }]
   },
+  // {
+  //   name: "driverGrades",
+  //   label: "飞手数量",
+  //   value: [{ 视距内等级: 0 }, { 超视距等级: 0 }, { 教员等级: 0 }]
+  // },
   {
-    name: "driverGrades",
+    name: "driverLicenceSource",
     label: "飞手数量",
-    value: [{ 视距内等级: 0 }, { 超视距等级: 0 }, { 教员等级: 0 }]
+    value: [{ AOPA: 0 }, { UTC: 0 }, { ASFC: 0 }]
   }
 ];
 
-export { companyOptions,companySource };
+export { companyOptions, companySource };
