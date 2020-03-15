@@ -1,14 +1,28 @@
 <template>
   <div class="app-container publish-container">
     <el-row class="shadow-container">
-      <el-col :span="11">
+      <div class="page-nav">
+        <span>
+          <i class="el-icon-document-add">发布信息</i>
+        </span>
+      </div>
+      <el-col :span="14">
         <div class="grid-content bg-purple">
-          <el-form size="small" label-width="100px">
+          <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
             <el-form-item label="我要发布：">
-              <el-select v-model="infoType">
-                <el-option label="供应信息" value="supplyInfo"></el-option>
+              <el-select v-model="form.type">
+                <el-option
+                  label="供应信息"
+                  value="supplyInfo"
+                  :disabled="$store.getters.userInfo.companyName ==''"
+                ></el-option>
                 <el-option label="需求信息" value="demandInfo"></el-option>
               </el-select>
+              <span
+                class="input-tips"
+                style="color:red;"
+                v-if="$store.getters.userInfo.companyName ==''"
+              >去个人中心绑定公司后才可以发布供应信息</span>
             </el-form-item>
 
             <el-form-item label="发布类型">
@@ -16,17 +30,17 @@
                 <el-radio label="aerialData">航测数据</el-radio>
                 <el-radio label="airspace">空域</el-radio>
                 <el-radio label="project">项目</el-radio>
-                <el-radio label="drone" v-if="infoType=='demandInfo'">无人机</el-radio>
-                <el-radio label="driver" v-if="infoType=='demandInfo'">飞手</el-radio>
+                <el-radio label="drones" v-if="form.type=='demandInfo'">无人机</el-radio>
+                <el-radio label="drivers" v-if="form.type=='demandInfo'">飞手</el-radio>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="标题">
-              <el-input v-model="name"></el-input>
+            <el-form-item label="标题" prop="name">
+              <el-input v-model="form.name" placeholder="简单描述您的信息"></el-input>
             </el-form-item>
 
             <el-form-item label="项目类型" v-if="submitType=='project'">
-              <el-select v-model="businessFields">
+              <el-select v-model="form.businessFields">
                 <el-option
                   v-for="item in companyOptions[1].value"
                   :key="item"
@@ -36,117 +50,101 @@
               </el-select>
             </el-form-item>
 
-            <!-- 无人机/飞手 -->
-            <el-form-item
-              v-for="option in companySource"
-              :key="option.name"
-              :label="option.label"
-              v-if="(submitType=='drone'&&option.name =='droneTypes')||(submitType=='driver'&&option.name =='driverLicenceSource')"
-            >
-              <div style="display:flex;">
-                <template v-for="item in option.value">
-                  <div style="margin-right:20px;">
-                    <div class="input-tips">{{Object.keys(item)[0]}}</div>
-                    <el-input-number v-model="supplies[option.name][Object.keys(item)[0]]" :min="0"></el-input-number>
-                  </div>
-                </template>
-              </div>
-            </el-form-item>
+            <!-- 行政区划选择 -->
+            <district-select
+              v-model="administrativDivision"
+              v-if="(submitType!='drone')&&(submitType!='driver')"
+            ></district-select>
 
-            <el-form-item label="选择地区" v-if="(submitType!='drone')&&(submitType!='driver')">
-              <div class="mb-5">
-                <div class="input-tips">选择省</div>
-                <el-select v-model="province" filterable @change="handleProvinceChange">
-                  <el-option
-                    v-for="item in provinceList"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </div>
-              <div class="mb-5">
-                <div class="input-tips">选择市</div>
-                <el-select
-                  v-model="city"
-                  filterable
-                  clearable
-                  placeholder="请选择"
-                  @change="handleCityChange"
-                >
-                  <el-option
-                    v-for="item in cityList"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </div>
-              <div class="mb-5">
-                <div class="input-tips">选择县</div>
-                <el-select v-model="district" placeholder="请选择" filterable clearable>
-                  <el-option
-                    v-for="item in districtList"
-                    :key="item.name"
-                    :label="item.name"
-                    :value="item.name"
-                  ></el-option>
-                </el-select>
-              </div>
-            </el-form-item>
+            <!-- 无人机飞手 -->
+            <template v-if="editorTableColumns&&editorTableColumns.length>0">
+              <el-table-editor
+                :columns="editorTableColumns"
+                :tableAttrs="tableAttrs"
+                :rules="droneAndDriverRules[submitType]"
+                class="table-editer"
+                ref="tableEdit"
+                v-model="form[submitType]"
+              >
+                <!-- <template v-slot:isSale="{ data }" v-if="submitType=='drones'">
+                  <el-radio-group v-model="data.isSale">
+                    <el-radio label="是">是</el-radio>
+                    <el-radio label="否">否</el-radio>
+                  </el-radio-group>
+                </template>-->
+              </el-table-editor>
+            </template>
 
             <!-- 文件上传 -->
             <el-form-item
               label="上传数据范围"
-              v-if="infoType=='supplyInfo'&&submitType=='aerialData'||infoType=='supplyInfo'&&submitType=='airspace'"
+              v-if="form.type=='supplyInfo'&&submitType=='aerialData'||form.type=='supplyInfo'&&submitType=='airspace'"
             >
               <el-button type="primary" icon="el-icon-upload" @click="uploadVisible=true">点击上传</el-button>
               <el-tag
                 closable
                 @close="handleUploadTagClose"
-                v-if="aerialData.region != ''"
+                v-if="form.region != ''"
               >{{uploadFileName}}</el-tag>
               <span class="input-tips" v-else>暂无上传数据</span>
             </el-form-item>
 
             <el-form-item label="项目面积" v-if="submitType=='project'">
-              <el-input v-model="area" class="mini-input"></el-input>
+              <el-input v-model="form.area" class="mini-input"></el-input>
               <span class="input-tips">平方千米</span>
             </el-form-item>
 
             <template v-if="submitType=='aerialData'">
               <el-form-item label="数据类型">
-                <el-select placeholder="选择数据类型" v-model="aerialData.type">
-                  <el-option label="正射影像" value="dom"></el-option>
-                  <el-option label="倾斜摄影" value="obliquePhotograph"></el-option>
+                <el-select placeholder="选择数据类型" v-model="form.aerialDataType">
+                  <el-option label="正射影像" value="正射影像"></el-option>
+                  <el-option label="倾斜摄影" value="倾斜摄影"></el-option>
                 </el-select>
               </el-form-item>
 
               <el-form-item label="航测面积">
-                <el-input class="mini-input" placeholder="输入面积" v-model="aerialData.area"></el-input>
+                <el-input class="mini-input" placeholder="输入面积" v-model="form.area"></el-input>
                 <span class="input-tips">平方千米</span>
               </el-form-item>
 
               <el-form-item label="拍摄日期">
-                <el-date-picker type="date" placeholder="选择日期" class="mini-input" v-model="date"></el-date-picker>
+                <el-date-picker
+                  type="date"
+                  placeholder="选择日期"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+                  class="mini-input"
+                  v-model="form.date"
+                ></el-date-picker>
               </el-form-item>
 
               <el-form-item label="分辨率">
-                <el-input class="mini-input" placeholder="输入分辨率" v-model="aerialData.resolution "></el-input>
+                <el-input class="mini-input" placeholder="输入分辨率" v-model="form.resolution "></el-input>
               </el-form-item>
 
               <el-form-item label="精度">
-                <el-input class="mini-input" placeholder="输入精度" v-model="aerialData.precision"></el-input>
+                <el-input class="mini-input" placeholder="输入精度" v-model="form.precision"></el-input>
               </el-form-item>
             </template>
 
             <el-form-item label="备注">
-              <el-input type="textarea" :rows="4" v-model="notes"></el-input>
+              <el-input type="textarea" :rows="4" v-model="form.notes"></el-input>
             </el-form-item>
+
+            <div>
+              <el-button
+                type="primary"
+                class="submit-btn"
+                size="small"
+                :disabled="isLoading"
+                :icon="isLoading?'el-icon-loading':''"
+                @click="submitInfo('form')"
+              >提交信息</el-button>
+            </div>
           </el-form>
         </div>
       </el-col>
-      <el-col :span="13">
+      <el-col :span="10">
         <div class="grid-content bg-purple-light">
           <div class="title" style="padding:20px;">
             <span>推荐列表:</span>
@@ -156,7 +154,7 @@
     </el-row>
 
     <el-dialog
-      title="上传文件"
+      title="上传文件并预览"
       :visible.sync="uploadVisible"
       top="0"
       append-to-body
@@ -201,75 +199,150 @@
 
 <script>
 import axios from "axios";
-import { companyOptions, companySource } from "../../utils/options";
+import ElTableEditor from "ele-table-editor";
 import { LGeoJson } from "vue2-leaflet";
 import MainMap from "../map/MainMap";
+import DistrictSelect from "../../components/districtSelect/DistrictSelect";
+import { infoRelease } from "../../api/user";
+import {
+  droneFields,
+  driverFields,
+  companyOptions,
+  rules
+} from "@/utils/options";
 import shp from "shpjs";
+
+const inputNumColumn = {
+  prop: "number",
+  label: "数量",
+  content: {
+    type: "el-input-number",
+    attrs: {
+      size: "mini",
+      mini: "1"
+    }
+  }
+};
+
+// droneFields.push(inputNumColumn);
+// driverFields.push(inputNumColumn);
+
 export default {
   components: {
     MainMap,
-    LGeoJson
+    LGeoJson,
+    DistrictSelect,
+    ElTableEditor
   },
   data() {
     return {
       companyOptions,
-      companySource,
-      infoType: "supplyInfo",
+      tableAttrs: {
+        size: "mini"
+      },
+      isLoading: false,
+      form: "",
       submitType: "aerialData",
-      businessFields: "应急",
-      aerialData: {
-        type: "dom",
-        area: "",
-        resolution: "",
-        precision: "",
-        region: ""
-      },
-      date: "",
-      notes: "",
-      name: "",
-      area: "",
-      province: "贵州省",
-      city: "贵阳市",
-      district: "",
-      street: "",
-      provinceList: [],
-      cityList: [],
-      districtList: [],
-      supplies: {
-        driverLicenceSource: { AOPA: 0, UTC: 0, ASFC: 0 },
-        droneTypes: { 多旋翼: 0, 固定翼: 0, 垂直起降: 0 }
-      },
+      administrativDivision: "",
       uploadVisible: false,
       geojson: [],
-      uploadFileName: ""
+      uploadFileName: "",
+      droneAndDriverRules: rules,
+      rules: {
+        name: [
+          { required: true, message: "请输入标题", trigger: "blur" },
+          { min: 3, max: 10, message: "长度在 3 到 50 个字符", trigger: "blur" }
+        ]
+      }
     };
   },
-  created() {
-    this.getRegion("中国", "provinceList");
-    this.getRegion("贵州省", "cityList");
-    this.getRegion("贵阳市", "districtList");
+  computed: {
+    editorTableColumns() {
+      if (this.form.type == "demandInfo") {
+        if (this.submitType == "drones") {
+          return droneFields.filter(el => {
+            return (
+              el.prop != "droneMaker" &&
+              el.prop != "buyTime" &&
+              el.prop != "isSale" &&
+              el.prop != "maxLoad"
+            );
+          });
+        }
+
+        if (this.submitType == "drivers") {
+          return driverFields;
+        }
+      } else {
+        return [];
+      }
+    }
   },
+  created() {
+    this.initForm();
+  },
+
   methods: {
-    getRegion(keyWords, target) {
-      if (keyWords == "") return;
-      axios
-        .get(
-          `http://api.tianditu.gov.cn/administrative?postStr={"searchWord":"${keyWords}","searchType":"1","needSubInfo":"true","needAll":"false","needPolygon":"false","needPre":"false"}&tk=1902c209c7a7480dfb962751b839b91e`
-        )
+    submitInfo(formName) {
+      let isDrone = false;
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          if (this.submitType == "drones" || this.submitType == "drivers") {
+            if (this.form[this.submitType].length == 0) {
+              this.$message.warning("请至少添加一条记录！");
+              return;
+            }
+            this.$refs["tableEdit"]
+              .validate()
+              .then(() => {
+                this.releaseInfo();
+                isDrone = true;
+                return;
+              })
+              .catch(err => {
+                console.log(err);
+              });
+          }
+          isDrone && this.releaseInfo();
+        }
+      });
+    },
+    initForm() {
+      this.form = {
+        aerialDataType: "正射影像",
+        area: "",
+        businessFields: "应急",
+        date: "",
+        drones: [],
+        drivers: [],
+        name: "",
+        notes: "",
+        resolution: "",
+        precision: "",
+        region: "",
+        type: "demandInfo",
+        userId: this.$store.getters.userInfo.userId
+      };
+    },
+    releaseInfo() {
+      this.isLoading = true;
+      if (this.form.region) {
+        this.form.region = JSON.stringify(this.form.region);
+      }
+      infoRelease({
+        ...this.form,
+        ...this.administrativDivision
+      })
         .then(res => {
-          this[target] = res.data.data[0].child;
+          this.isLoading = false;
+          if (res.code == 1) {
+            this.initForm();
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this.isLoading = false;
         });
-    },
-    handleProvinceChange(e) {
-      this.getRegion(e, "cityList");
-      this.city = "";
-      this.district = "";
-      this.street = "";
-    },
-    handleCityChange(e) {
-      this.getRegion(e, "districtList");
-      this.district = "";
-      this.street = "";
     },
     file2url(file, fileList) {
       this.uploadFileName = file.name;
@@ -296,7 +369,7 @@ export default {
       };
     },
     uploadClose() {
-      this.map = "";
+      this.map = null;
       this.geojson = {};
     },
     mapReady(e) {
@@ -309,17 +382,17 @@ export default {
       if (Object.keys(this.geojson).length == 0) {
         this.$message.warning("没有正确上传数据范围");
       } else {
-        this.aerialData.region = this.geojson;
+        this.form.region = this.geojson;
         this.$message.success("成功上传数据范围");
       }
       this.uploadVisible = false;
     },
     handleUploadCancle() {
       this.$message("上传取消");
-      this.uploadVisible = false
+      this.uploadVisible = false;
     },
     handleUploadTagClose() {
-      this.aerialData.region = "";
+      this.form.region = "";
       this.uploadFileName = "";
     }
   }
@@ -354,6 +427,19 @@ export default {
     }
   }
 }
+.publish-container {
+  .table-editer {
+    margin-left: 60px;
+    margin-bottom: 20px;
+  }
+}
+
+.ele-table-editor-btn {
+  margin-bottom: 5px;
+  .el-button {
+    padding: 7px 15px;
+  }
+}
 </style>
 
 <style scoped lang="scss">
@@ -373,6 +459,12 @@ export default {
   .upload {
     border: 1px solid rgb(236, 230, 230);
     padding: 20px;
+  }
+
+  .submit-btn {
+    margin-left: 200px;
+    margin-top: 20px;
+    width: 100px;
   }
 }
 </style>

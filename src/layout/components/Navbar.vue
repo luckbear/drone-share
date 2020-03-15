@@ -5,17 +5,21 @@
       <span>无人机共享平台</span>
     </div>
     <div class="user-wrap">
-      <!-- <span class="welcome">欢迎你xxx</span> -->
-      <span>
+      <span class="welcome" v-if="token">欢迎你 {{userInfo&&userInfo.username}}</span>
+      <span v-else>
         <a href="javascript:;" @click="loginVisible = true">登陆</a> /
         <a href="javascript:;" @click="registerVisible = true">注册</a>
       </span>
 
       <el-dropdown>
-        <svg-icon icon-class="user" class="user" style="color:#fff"></svg-icon>
+        <span>
+          <svg-icon icon-class="user" class="user" style="color:#fff"></svg-icon>
+        </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>个人中心</el-dropdown-item>
-          <el-dropdown-item>退出登陆</el-dropdown-item>
+          <el-dropdown-item>
+            <span @click="logout">退出登陆</span>
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -27,7 +31,7 @@
       style="max-width:1900px"
       v-if="loginVisible"
     >
-      <login />
+      <login @loginSuccess="loginVisible=false" />
     </el-dialog>
 
     <el-dialog
@@ -60,12 +64,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["sidebar", "avatar"])
+    ...mapGetters(["userInfo", "token"])
   },
   methods: {
-    async logout() {
-      await this.$store.dispatch("user/logout");
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+    logout() {
+      this.$store.dispatch("user/logout");
+      this.$router.push("/");
     },
     openLogin() {
       this.loginVisible = true;

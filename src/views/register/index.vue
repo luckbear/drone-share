@@ -10,11 +10,11 @@
       class="register-form"
     >
       <el-form-item label="注册类型">
-        <el-radio v-model="registerType" label="company">公司身份注册</el-radio>
-        <el-radio v-model="registerType" label="person">个人身份注册</el-radio>
+        <el-radio v-model="form.userType" label="company">公司身份注册</el-radio>
+        <el-radio v-model="form.userType" label="personal">个人身份注册</el-radio>
       </el-form-item>
-      <el-form-item label="用户名" prop="userName">
-        <el-input v-model="form.userName" placeholder="请输入用户名"></el-input>
+      <el-form-item label="用户名" prop="username">
+        <el-input v-model="form.username" placeholder="请输入用户名"></el-input>
         <span class="input-tips">3到10个字符</span>
       </el-form-item>
 
@@ -27,16 +27,16 @@
         <el-input v-model="form.rePassword" placeholder="请重复密码" show-password></el-input>
       </el-form-item>
 
-      <el-form-item label="联系方式">
+      <el-form-item label="联系方式" prop="contact">
         <el-input v-model="form.contact" placeholder="邮箱或者手机号"></el-input>
       </el-form-item>
 
-      <template v-if="registerType =='company'">
+      <template v-if="form.userType =='company'">
         <el-form-item label="公司名称" prop="companyName">
           <el-input v-model="form.companyName" placeholder="请输入公司名称"></el-input>
         </el-form-item>
 
-        <el-form-item label="公司地址">
+        <el-form-item label="详细地址">
           <el-autocomplete
             v-model="addressInput"
             placeholder="请定位公司地址"
@@ -49,23 +49,13 @@
           <el-tooltip class="item" effect="dark" content="点击进行定位" placement="top-start">
             <el-button type="primary" icon="el-icon-location-outline" @click="getLocation"></el-button>
           </el-tooltip>
+          <span class="input-tips">自动定位不准时请手动搜索地址</span>
         </el-form-item>
 
         <el-form-item v-for="option in companyOptions" :key="option.name" :label="option.label">
           <el-checkbox-group v-model="form[option.name]">
-            <el-checkbox v-for="item in option.value" :label="item">{{item}}</el-checkbox>
+            <el-checkbox v-for="item in option.value" :key="item" :label="item">{{item}}</el-checkbox>
           </el-checkbox-group>
-        </el-form-item>
-
-        <el-form-item v-for="option in companySource" :key="option.name" :label="option.label">
-          <div style="display:flex">
-            <template v-for="item in option.value">
-              <div style="margin-right:20px">
-                <div class="input-tips">{{Object.keys(item)[0]}}</div>
-                <el-input-number v-model="form[option.name][Object.keys(item)[0]]" :min="0"></el-input-number>
-              </div>
-            </template>
-          </div>
         </el-form-item>
       </template>
     </el-form>
@@ -73,7 +63,7 @@
       <el-button class="submit-btn" type="primary" @click="submitInfo('form')">提交注册</el-button>
     </div>
     <div class="tips">
-      <span v-if="registerType =='company'">*登陆后在个人中心更改公司信息*</span>
+      <span v-if="form.userType =='company'">*登陆后在个人中心更改公司信息*</span>
       <span v-else>*登陆后可以在个人中心添加公司信息*</span>
     </div>
   </div>
@@ -81,11 +71,18 @@
 
 <script>
 import { companyOptions, companySource } from "../../utils/options";
+import { getAdministrativDivision } from "@/utils/index";
+
+import DistrictSelect from "@/components/districtSelect/DistrictSelect";
+import { register } from "../../api/user";
 import axios from "axios";
 const geodeKey = "a4d407ac14f869095063169e1fccfb93";
 export default {
+  components: {
+    DistrictSelect
+  },
   data() {
-    const validateUsername = (rule, value, callback) => {
+    const validateusername = (rule, value, callback) => {
       if (value == "") {
         callback(new Error("用户名不能为空"));
       } else {
@@ -114,25 +111,23 @@ export default {
 
     return {
       companyOptions,
-      companySource,
       addressInput: "",
-      registerType: "company",
+      administrativDivision: {},
       form: {
-        userName: "",
+        userType: "company",
+        username: "",
         password: "",
         rePassword: "",
         contact: "",
         companyName: "",
         companyAddress: "",
-        companyLocation: "",
+        companyLon: "",
+        companyLat: "",
         companyTypes: [],
-        businessFields: [],
-        droneTypes: { 多旋翼: 0, 固定翼: 0, 垂直起降: 0 },
-        droneUsages: [],
-        driverLicenceSource: { AOPA: 0, UTC: 0, ASFC: 0 }
+        businessFields: []
       },
       rules: {
-        userName: [
+        username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
           { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
         ],
@@ -144,6 +139,13 @@ export default {
             // validator: validatePassword
           },
           { min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur" }
+        ],
+        contact: [
+          {
+            required: true,
+            message: "请输入手机号或者邮箱",
+            trigger: "blur"
+          }
         ],
         rePassword: [
           {
@@ -165,11 +167,30 @@ export default {
     };
   },
   created() {},
+  watch: {
+    "form.companyAddress"(newVal, oldVal) {
+      if (!newVal) {
+        this.administrativDivision = {};
+        this.form.companyLocation = "";
+      }
+    }
+  },
   methods: {
     submitInfo(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$emit("closeCurrentDialog", this.form.userName);
+          register({ ...this.form, ...this.administrativDivision }).then(
+            res => {
+              console.log(res);
+              if (res.code == -1) {
+                return;
+              }
+
+              if (res.code == 1) {
+                this.$emit("closeCurrentDialog", this.form.username);
+              }
+            }
+          );
         } else {
           console.log("error submit!!");
           return false;
@@ -189,7 +210,8 @@ export default {
               searchResults.forEach(el => {
                 canidateList.push({
                   value: el.district + el.address + el.name,
-                  location: el.location
+                  location: el.location,
+                  administrativDivision: getAdministrativDivision(el.district)
                 });
               });
               cb(canidateList);
@@ -199,7 +221,17 @@ export default {
     },
     addressAdviceSelect(e) {
       this.form.companyAddress = e.value;
-      this.form.companyLocation = e.location;
+      this.form.companyLat = e.location.split(",")[1];
+      this.form.companyLon = e.location.split(",")[0];
+
+      // this.form.companyLocation = [
+      //   e.location.split(",")[1],
+      //   e.location.split(",")[0]
+      // ];
+      // this.administrativDivision = e.administrativDivision;
+      this.form.province = e.administrativDivision.province;
+      this.form.city = e.administrativDivision.city;
+      this.form.district = e.administrativDivision.district;
     },
     getLocation() {
       if (navigator.geolocation) {
@@ -219,10 +251,15 @@ export default {
         )
         .then(res => {
           if (res.data.status == 1) {
-            this.form.companyAddress = res.data.regeocode.formatted_address;
+            const info = res.data.regeocode;
+            this.form.companyAddress = info.formatted_address;
+            this.form.province = info.addressComponent.province;
+            this.form.city = info.addressComponent.city;
+            this.form.district = info.addressComponent.district;
             this.addressInput = "";
-            this.form.companyLocation =
-              coords.longitude + "," + coords.latitude;
+            this.form.companyLat = coords.latitude;
+            this.form.companyLon = coords.longitude;
+            // this.form.companyLocation = [coords.latitude, coords.longitude];
           }
         });
     },
@@ -249,7 +286,9 @@ export default {
     handleTagClose() {
       this.form.companyAddress = "";
       this.addressInput = "";
-      this.form.companyLocation = "";
+      // this.form.companyLocation = "";
+      this.form.companyLat = "";
+      this.form.companyLon = "";
     }
   }
 };

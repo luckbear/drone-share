@@ -80,3 +80,16 @@ div:focus {
   font-size: 12px;
   color: #ccc;
 }
+
+.main-color {
+  color: $menuActiveText;
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.page-nav{
+  padding:10px 30px ;
+  color: rgb(84, 110, 122);;
+}

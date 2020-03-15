@@ -5,12 +5,32 @@ const userInfo = {
   contact: "",
   companyName: "",
   companyAddress: "",
-  companyLocation: "",
+  companyLocation: [21, 121],
   companyTypes: ["科研", "制造", "系统开发"],
   businessFields: ["应急", "救援", "水利"],
-  droneTypes: { 多旋翼: 6, 固定翼: 0, 垂直起降: 0 },
-  droneUsages: ["电力巡线", "航空物流"],
-  driverLicenceSource: { dji: 7, aopo: 3 },
+
+  province: "",
+  city: "",
+  district: "",
+  droneData: [
+    {
+      droneTypes: "垂直起降",
+      droneUsages: "气象探测",
+      droneMaker: "ddsd",
+      buyTime: "2020-03-15T16:00:00.000Z",
+      isSale: "否",
+      maxLoad: "dddd"
+    }
+  ],
+  driverData: [
+    {
+      driverLicenceSource: "ASFC",
+      type: "多旋翼",
+      grade: "四",
+      driverGrade: " 教员等级"
+    }
+  ],
+
   supplyInfo: {
     aerialData: [
       {
@@ -20,9 +40,10 @@ const userInfo = {
         resolution: "",
         precision: "",
         date: "",
-        administrativDivision: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        province: "",
+        city: "",
+        district: "",
+        centerLatLng: [21, 121],
         region: [
           [21, 121],
           [23, 121],
@@ -34,9 +55,10 @@ const userInfo = {
     airspace: [
       {
         name: "",
-        administrativDivision: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        province: "",
+        city: "",
+        district: "",
+        centerLatLng: [21, 121],
         region: [
           [21, 121],
           [23, 121],
@@ -48,10 +70,11 @@ const userInfo = {
     project: [
       {
         name: "",
-        administrativDivision: "",
+        province: "",
+        city: "",
+        district: "",
         businessFields: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        centerLatLng: [21, 121],
         area: "",
         notes: ""
       }
@@ -66,18 +89,20 @@ const userInfo = {
         resolution: "",
         precision: "",
         date: "",
-        administrativDivision: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        province: "",
+        city: "",
+        district: "",
+        centerLatLng: [21, 121],
         notes: ""
       }
     ],
     airspace: [
       {
         name: "",
-        administrativDivision: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        province: "",
+        city: "",
+        district: "",
+        centerLatLng: [21, 121],
         notes: ""
       }
     ],
@@ -85,14 +110,27 @@ const userInfo = {
       {
         name: "",
         businessFields: "",
-        administrativDivision: "",
-        centerLat: 21, //Number
-        centerLng: 121, //Number
+        province: "",
+        city: "",
+        district: "",
+        centerLatLng: [21, 121],
         area: "",
         notes: ""
       }
     ],
-    droneTypes: [{ 多旋翼: 6, 固定翼: 0, 垂直起降: 0 }],
-    driverLicenceSource: [{ dji: 7, aopo: 3 }]
+    droneData: [
+      {
+        droneTypes: "垂直起降",
+        droneUsages: "气象探测"
+      }
+    ],
+    driverData: [
+      {
+        driverLicenceSource: "ASFC",
+        type: "多旋翼",
+        grade: "四",
+        driverGrade: " 教员等级"
+      }
+    ]
   }
 };

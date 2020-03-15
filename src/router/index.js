@@ -36,35 +36,48 @@ export const constantRoutes = [
     component: () => import("@/views/404"),
     hidden: true
   },
-
   {
     path: "/",
-    component: Layout,
-    redirect: "/dashboard",
-    children: [
-      {
-        path: "dashboard",
-        name: "Dashboard",
-        component: () => import("@/views/dashboard/index"),
-        meta: { title: "主页", icon: "主页" }
-      }
-    ]
+    redirect: "/dashboard"
   },
-
   {
-    path: "/register",
-    component: Layout,
+    path: "/dashboard",
+    component: () => import("@/views/dashboard/index"),
+    redirect: "/dashboard/company",
+    meta: { title: "共享信息", icon: "主页" },
     children: [
       {
-        path: "index",
-        name: "Register",
-        component: () => import("@/views/register/index"),
-        meta: { title: "注册", icon: "form" },
-        hidden: true
+        path: "company",
+        name: "Company",
+        component: () => import("@/views/company/index"),
+        meta: { title: "公司(项目)", icon: "gongsi" }
+      },
+      {
+        path: "droneTypes",
+        name: "DroneTypes",
+        component: () => import("@/views/drone/index"),
+        meta: { title: "无人机", icon: "无人机" }
+      },
+      {
+        path: "driver",
+        name: "Driver",
+        component: () => import("@/views/driver/index"),
+        meta: { title: "飞手", icon: "yaokongqidianliang" }
+      },
+      {
+        path: "airspace",
+        name: "Airspace",
+        component: () => import("@/views/airspace/index"),
+        meta: { title: "空域", icon: "kongyu" }
+      },
+      {
+        path: "aerialData",
+        name: "AerialData",
+        component: () => import("@/views/aerialData/index"),
+        meta: { title: "数据", icon: "shuju" }
       }
     ]
   },
-
   // {
   //   path: '/example',
   //   component: Layout,
@@ -89,25 +102,35 @@ export const constantRoutes = [
 
   {
     path: "/form",
-    component: Layout,
-    children: [
-      {
-        path: "index",
-        name: "Form",
-        component: () => import("@/views/form/index"),
-        meta: { title: "信息发布", icon: "form", isLogin: true }
-      }
-    ]
+    component: () => import("@/views/form/index"),
+    meta: { title: "信息发布", icon: "form", isLogin: true }
+
+    // children: [
+    //   {
+    //     path: "index",
+    //     name: "Form",
+    //     component: () => import("@/views/form/index"),
+    //     meta: { title: "信息发布", icon: "form", isLogin: true }
+    //   }
+    // ]
   },
   {
     path: "/user",
-    component: Layout,
+    redirect: "/user/userInfo",
+    component: () => import("@/views/user/index"),
+    meta: { title: "个人中心", icon: "user", isLogin: true },
     children: [
       {
-        path: "index",
-        name: "User",
-        component: () => import("@/views/user/index"),
-        meta: { title: "个人中心", icon: "user", isLogin: true }
+        path: "userInfo",
+        name: "UserInfo",
+        component: () => import("@/views/user/UserInfo.vue"),
+        meta: { title: "基本信息", icon: "table", isLogin: true }
+      },
+      {
+        path: "infoManger",
+        name: "InfoManger",
+        component: () => import("@/views/user/InfoManger.vue"),
+        meta: { title: "资产管理", icon: "tree", isLogin: true }
       }
     ]
   },
@@ -170,16 +193,16 @@ export const constantRoutes = [
   //   ]
   // },
 
-  {
-    path: "external-link",
-    component: Layout,
-    children: [
-      {
-        path: "https://panjiachen.github.io/vue-element-admin-site/#/",
-        meta: { title: "External Link", icon: "link" }
-      }
-    ]
-  },
+  // {
+  //   path: "external-link",
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: "https://panjiachen.github.io/vue-element-admin-site/#/",
+  //       meta: { title: "External Link", icon: "link" }
+  //     }
+  //   ]
+  // },
 
   // 404 page must be placed at the end !!!
   { path: "*", redirect: "/404", hidden: true }

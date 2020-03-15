@@ -17,37 +17,26 @@ router.beforeEach(async (to, from, next) => {
   // set page title
   document.title = getPageTitle(to.meta.title);
 
-  next();
+  // next();
   // determine whether the user has logged in
   const hasToken = getToken();
+  const hasUserInfo = store.getters.userInfo;
 
-  // if (to.meta.isLogin) {
-  //   if (hasToken) {
-  //     const hasGetUserInfo = store.getters.name;
-  //     if (hasGetUserInfo) {
-  //       next();
-  //     } else {
-  //       try {
-  //         // get user info
-  //         await store.dispatch("user/getInfo");
+  if (hasToken && !hasUserInfo) {
+    store.commit("user/SET_USERINFO", JSON.parse(localStorage.getItem(hasToken)));
+  }
 
-  //         next();
-  //       } catch (error) {
-  //         // remove token and go to login page to re-login
-  //         await store.dispatch("user/resetToken");
-  //         Message.error("Has Error");
-  //         next("/dashboard");
-  //         NProgress.done();
-  //       }
-  //     }
-  //   } else {
-  //     Message.error("请先进行登陆！");
-  //     next(from.path);
-  //     NProgress.done();
-  //   }
-  // } else {
-  //   next();
-  // }
+  if (to.meta.isLogin) {
+    if (hasToken) {
+      next();
+    } else {
+      Message.error("请先进行登陆！");
+      next(from.path);
+      NProgress.done();
+    }
+  } else {
+    next();
+  }
 });
 
 router.afterEach(() => {

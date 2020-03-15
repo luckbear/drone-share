@@ -8,8 +8,6 @@
       auto-complete="on"
       label-position="left"
     >
-     
-
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -91,14 +89,7 @@ export default {
       redirect: undefined
     };
   },
-  watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect;
-      },
-      immediate: true
-    }
-  },
+
   methods: {
     showPwd() {
       if (this.passwordType === "password") {
@@ -116,9 +107,11 @@ export default {
           this.loading = true;
           this.$store
             .dispatch("user/login", this.loginForm)
-            .then(() => {
-              this.$router.push({ path: this.redirect || "/" });
+            .then(res => {
               this.loading = false;
+              // this.$message.success("登陆成功！");
+              this.$emit("loginSuccess");
+              this.$router.push({ path: "/" });
             })
             .catch(() => {
               this.loading = false;
