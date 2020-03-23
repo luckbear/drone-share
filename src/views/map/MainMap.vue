@@ -41,8 +41,8 @@ export default {
   },
   data() {
     return {
-      zoom: 7,
-      center: [27.35, 107.19],
+      zoom: 9,
+      center: [26.51, 106.62],
       options: {
         attributionControl: false,
         preferCanvas: true

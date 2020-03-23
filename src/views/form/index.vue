@@ -10,7 +10,7 @@
         <div class="grid-content bg-purple">
           <el-form size="mini" label-width="120px" :model="form" :rules="rules" ref="form">
             <el-form-item label="我要发布：">
-              <el-select v-model="form.type">
+              <el-select v-model="form.type" @change="initForm">
                 <el-option
                   label="供应信息"
                   value="supplyInfo"
@@ -26,7 +26,7 @@
             </el-form-item>
 
             <el-form-item label="发布类型">
-              <el-radio-group v-model="submitType">
+              <el-radio-group v-model="submitType" @change="initForm">
                 <el-radio label="aerialData">航测数据</el-radio>
                 <el-radio label="airspace">空域</el-radio>
                 <el-radio label="project">项目</el-radio>
@@ -39,8 +39,8 @@
               <el-input v-model="form.name" placeholder="简单描述您的信息"></el-input>
             </el-form-item>
 
-            <el-form-item label="项目类型" v-if="submitType=='project'">
-              <el-select v-model="form.businessFields">
+            <el-form-item label="项目类型" v-if="submitType=='project'" prop="businessFields">
+              <el-select v-model="form.businessFields" @change="initForm">
                 <el-option
                   v-for="item in companyOptions[1].value"
                   :key="item"
@@ -95,8 +95,8 @@
             </el-form-item>
 
             <template v-if="submitType=='aerialData'">
-              <el-form-item label="数据类型">
-                <el-select placeholder="选择数据类型" v-model="form.aerialDataType">
+              <el-form-item label="数据类型" prop="aerialDataType">
+                <el-select placeholder="选择数据类型" v-model="form.aerialDataType" @change="initForm">
                   <el-option label="正射影像" value="正射影像"></el-option>
                   <el-option label="倾斜摄影" value="倾斜摄影"></el-option>
                 </el-select>
@@ -109,12 +109,12 @@
 
               <el-form-item label="拍摄日期">
                 <el-date-picker
-                  type="date"
+                  type="daterange"
                   placeholder="选择日期"
                   format="yyyy-MM-dd"
                   value-format="yyyy-MM-dd"
                   class="mini-input"
-                  v-model="form.date"
+                  v-model="date"
                 ></el-date-picker>
               </el-form-item>
 
@@ -146,8 +146,50 @@
       </el-col>
       <el-col :span="10">
         <div class="grid-content bg-purple-light">
-          <div class="title" style="padding:20px;">
+          <div class="title" style="padding:5px;">
             <span>推荐列表:</span>
+            <div>
+              <el-table :data="relustList" size="mini" height="100%">
+                <el-table-column prop="name" label="名称" v-if="!isSupplyDroneOrDriver"></el-table-column>
+
+                <el-table-column label="位置">
+                  <template
+                    slot-scope="scope"
+                  >{{scope.row['province']+scope.row['city']||''+scope.row['district']||''}}</template>
+                </el-table-column>
+
+                <el-table-column
+                  v-for="item in filterFields"
+                  :key="item.prop"
+                  :label="item.label"
+                  :width="item.prop=='area'?'45px':''"
+                >
+                  <template slot-scope="scope">{{scope.row[item.prop]}}</template>
+                </el-table-column>
+                <el-table-column label="发布人">
+                  <template slot-scope="scope">{{scope.row['companyName']||scope.row['username']}}</template>
+                </el-table-column>
+                <el-table-column label="联系方式">
+                  <template slot-scope="scope">
+                    <span v-if="token">{{scope.row['contact']}}</span>
+                    <span v-else>登陆后查看</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+
+              <!-- 分页 -->
+              <el-pagination
+                background
+                layout="prev, pager, next, sizes,total"
+                :page-size="pageSize"
+                :page-sizes="[10,15,20,30]"
+                :current-page="page"
+                :total="total"
+                size="mini"
+                @size-change="queryInfo"
+                @current-change="queryInfo"
+              ></el-pagination>
+            </div>
           </div>
         </div>
       </el-col>
@@ -203,11 +245,14 @@ import ElTableEditor from "ele-table-editor";
 import { LGeoJson } from "vue2-leaflet";
 import MainMap from "../map/MainMap";
 import DistrictSelect from "../../components/districtSelect/DistrictSelect";
-import { infoRelease } from "../../api/user";
+import { mapGetters } from "vuex";
+
+import { infoRelease, getInfoList, getUserList } from "../../api/user";
 import {
   droneFields,
   driverFields,
   companyOptions,
+  filterOptions,
   rules
 } from "@/utils/options";
 import shp from "shpjs";
@@ -224,6 +269,22 @@ const inputNumColumn = {
   }
 };
 
+const _droneFields = droneFields.slice(1, droneFields.length);
+const _driverFields = driverFields.slice(1, driverFields.length);
+
+const filterDic = {
+  drones: _droneFields,
+  drivers: _driverFields,
+  airspace: [],
+  aerialData: [
+    filterOptions[0],
+    { prop: "area", label: "面积" },
+    { prop: "date", label: "拍摄日期" },
+    { prop: "resolution", label: "分辨率" },
+    { prop: "precision", label: "精度" }
+  ]
+};
+
 // droneFields.push(inputNumColumn);
 // driverFields.push(inputNumColumn);
 
@@ -237,9 +298,14 @@ export default {
   data() {
     return {
       companyOptions,
+      page: 1,
+      pageSize: 10,
+      total: 0,
       tableAttrs: {
         size: "mini"
       },
+      relustList: [],
+      date: "",
       isLoading: false,
       form: "",
       submitType: "aerialData",
@@ -252,11 +318,22 @@ export default {
         name: [
           { required: true, message: "请输入标题", trigger: "blur" },
           { min: 3, max: 10, message: "长度在 3 到 50 个字符", trigger: "blur" }
-        ]
+        ],
+        businessFields: {
+          required: true,
+          message: "请选择类型",
+          trigger: "change"
+        },
+        aerialDataType: {
+          required: true,
+          message: "请选择数据类型",
+          trigger: "change"
+        }
       }
     };
   },
   computed: {
+    ...mapGetters(["token"]),
     editorTableColumns() {
       if (this.form.type == "demandInfo") {
         if (this.submitType == "drones") {
@@ -276,6 +353,25 @@ export default {
       } else {
         return [];
       }
+    },
+    filterFields() {
+      if (this.submitType == "drones" && this.form.type == "demandInfo") {
+        return filterDic[this.submitType].filter(el => {
+          return (
+            el.prop != "buyTime" &&
+            el.prop != "droneMaker" &&
+            el.prop != "maxLoad"
+          );
+        });
+      }
+      return filterDic[this.submitType];
+    },
+    isSupplyDroneOrDriver() {
+      let isSupply = this.form.type == "supplyInfo";
+      return (
+        (isSupply && this.submitType == "drones") ||
+        (isSupply && this.submitType == "drivers")
+      );
     }
   },
   created() {
@@ -283,11 +379,66 @@ export default {
   },
 
   methods: {
+    queryInfo() {
+      let _form = { ...this.form };
+      delete this.administrativDivision.centerLat;
+      delete this.administrativDivision.centerLon;
+      _form.type = _form.type === "supplyInfo" ? "demandInfo" : "supplyInfo";
+
+      if (this.isSupplyDroneOrDriver) {
+        this.getCompanyList();
+      } else {
+        getInfoList(this.page, this.pageSize, {
+          ..._form,
+          ...this.administrativDivision,
+          releaseType: this.submitType
+        }).then(res => {
+          this.formatData(res.datas);
+        });
+      }
+    },
+    getCompanyList() {
+      getUserList(this.page, this.pageSize, {
+        ...this.form,
+        ...this.administrativDivision
+      }).then(res => {
+        // console.log(res);
+        // this.formatData(res.datas);
+        let result = res.datas;
+        // console.log(result);
+
+        result.datas.forEach(el => {
+          for (let key in el[this.submitType][0]) {
+            el[key] = el[this.submitType][0][key];
+          }
+        });
+        this.relustList = result.datas;
+        this.total = result.total;
+      });
+    },
+    formatData(result) {
+      if (this.submitType == "drones" || this.submitType == "drivers") {
+        result.datas.forEach(el => {
+          for (let key in el[this.submitType][0]) {
+            el[key] = el[this.submitType][0][key];
+          }
+        });
+      }
+
+      result.datas.forEach(el => {
+        for (let key in el["userInfo"]) {
+          el[key] = el["userInfo"][key];
+        }
+      });
+      this.relustList = result.datas;
+      this.total = result.total;
+    },
     submitInfo(formName) {
-      let isDrone = false;
+      let isNotDrone = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.submitType == "drones" || this.submitType == "drivers") {
+            isNotDrone = false;
             if (this.form[this.submitType].length == 0) {
               this.$message.warning("请至少添加一条记录！");
               return;
@@ -296,22 +447,23 @@ export default {
               .validate()
               .then(() => {
                 this.releaseInfo();
-                isDrone = true;
                 return;
               })
               .catch(err => {
                 console.log(err);
               });
           }
-          isDrone && this.releaseInfo();
+          isNotDrone && this.releaseInfo();
         }
       });
     },
     initForm() {
+      this.relustList = [];
+      this.queryInfo();
       this.form = {
-        aerialDataType: "正射影像",
+        aerialDataType: "",
         area: "",
-        businessFields: "应急",
+        businessFields: "",
         date: "",
         drones: [],
         drivers: [],
@@ -320,23 +472,27 @@ export default {
         resolution: "",
         precision: "",
         region: "",
-        type: "demandInfo",
         userId: this.$store.getters.userInfo.userId
       };
+      this.form.type = this.form.type ? this.form.type : "demandInfo";
     },
     releaseInfo() {
       this.isLoading = true;
       if (this.form.region) {
         this.form.region = JSON.stringify(this.form.region);
       }
+      if (this.date) {
+        this.form.date = this.date[0] + "-" + this.date[1];
+      }
       infoRelease({
         ...this.form,
-        ...this.administrativDivision
+        ...this.administrativDivision,
+        releaseType: this.submitType
       })
         .then(res => {
           this.isLoading = false;
           if (res.code == 1) {
-            this.initForm();
+            // this.initForm();
           }
         })
         .catch(err => {
@@ -380,10 +536,10 @@ export default {
     },
     submitUpload() {
       if (Object.keys(this.geojson).length == 0) {
-        this.$message.warning("没有正确上传数据范围");
+        this.$message.warning("没有正确解析shp文件");
       } else {
         this.form.region = this.geojson;
-        this.$message.success("成功上传数据范围");
+        this.$message.success("成功解析shp文件");
       }
       this.uploadVisible = false;
     },

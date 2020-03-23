@@ -5,7 +5,7 @@ import { getToken } from "@/utils/auth";
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  timeout: 5000,
+  timeout: 180000,
   headers: {
     "Content-Type": "application/json"
   }
@@ -37,10 +37,12 @@ service.interceptors.response.use(
     }
 
     if (res.code == 1) {
-      Message({
-        message: res.msg == "正确响应" ? "提交成功" : res.msg,
-        type: "success"
-      });
+      if (res.msg != "正确响应") {
+        Message({
+          message: res.msg,
+          type: "success"
+        });
+      }
     }
 
     return res;

@@ -2,10 +2,10 @@
   <div class="navbar">
     <div class="logo">
       <svg-icon icon-class="无人机" class="drone"></svg-icon>
-      <span>无人机共享平台</span>
+      <span>贵州省无人机共享平台</span>
     </div>
     <div class="user-wrap">
-      <span class="welcome" v-if="token">欢迎你 {{userInfo&&userInfo.username}}</span>
+      <span class="welcome" v-if="token">欢迎你 {{userInfo.companyName||userInfo.username}}</span>
       <span v-else>
         <a href="javascript:;" @click="loginVisible = true">登陆</a> /
         <a href="javascript:;" @click="registerVisible = true">注册</a>

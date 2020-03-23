@@ -1,6 +1,5 @@
 module.exports = {
-
-  title: 'drone-share',
+  title: "贵州省无人机共享平台",
 
   /**
    * @type {boolean} true | false
@@ -13,4 +12,4 @@ module.exports = {
    * @description Whether show the logo in sidebar
    */
   sidebarLogo: false
-}
+};

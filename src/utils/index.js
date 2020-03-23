@@ -114,7 +114,7 @@ export function getAdministrativDivision(divisionStr) {
   let district = "";
   let isProvince = divisionStr[2] == "省";
   let isZhiXiaShi = divisionStr[2] == "市";
-  let isZhou = divisionStr.includes("州");
+  let isZhou = divisionStr.includes("州") && divisionStr[1] != "州";
 
   if (isProvince) {
     province = divisionStr.split("省")[0] + "省";

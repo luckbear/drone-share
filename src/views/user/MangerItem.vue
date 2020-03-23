@@ -84,7 +84,7 @@ export default {
             .then(res => {
               if (res.code == 1) {
                 this.$store.commit("user/UPDATE_USERINFO", this.userInfo);
-                // this.$message.success("修改成功");
+                this.$message.success("修改成功");
                 this.isEdit = false;
                 this.isLoading = false;
               } else {
