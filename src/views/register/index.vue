@@ -35,6 +35,8 @@
         <el-form-item label="公司名称" prop="companyName">
           <el-input v-model="form.companyName" placeholder="请输入公司名称"></el-input>
         </el-form-item>
+      </template>
+      
 
         <location v-model="administrativDivision"></location>
 
@@ -53,6 +55,7 @@
           </el-tooltip>
           <span class="input-tips">自动定位不准时请手动搜索地址</span>
         </el-form-item>-->
+      <template v-if="form.userType =='company'">
 
         <el-form-item v-for="option in companyOptions" :key="option.name" :label="option.label">
           <el-checkbox-group v-model="form[option.name]">

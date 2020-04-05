@@ -134,7 +134,16 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: "/foundation",
+    component: () => import("@/views/foundation/index"),
+    meta: { title: "基地建设", icon: "foundation", }
+  },
+  {
+    path: "/infomation",
+    component: () => import("@/views/info/index"),
+    meta: { title: "行业信息", icon: "info", }
+  },
   // {
   //   path: '/nested',
   //   component: Layout,

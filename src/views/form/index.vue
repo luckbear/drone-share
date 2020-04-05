@@ -40,7 +40,7 @@
             </el-form-item>
 
             <el-form-item label="项目类型" v-if="submitType=='project'" prop="businessFields">
-              <el-select v-model="form.businessFields" @change="initForm">
+              <el-select v-model="form.businessFields" @change="queryInfo">
                 <el-option
                   v-for="item in companyOptions[1].value"
                   :key="item"
@@ -96,7 +96,7 @@
 
             <template v-if="submitType=='aerialData'">
               <el-form-item label="数据类型" prop="aerialDataType">
-                <el-select placeholder="选择数据类型" v-model="form.aerialDataType" @change="initForm">
+                <el-select placeholder="选择数据类型" v-model="form.aerialDataType" @change="queryInfo">
                   <el-option label="正射影像" value="正射影像"></el-option>
                   <el-option label="倾斜摄影" value="倾斜摄影"></el-option>
                 </el-select>
@@ -307,7 +307,21 @@ export default {
       relustList: [],
       date: "",
       isLoading: false,
-      form: "",
+      form: {
+        aerialDataType: "",
+        area: "",
+        businessFields: "",
+        date: "",
+        drones: [],
+        drivers: [],
+        name: "",
+        notes: "",
+        resolution: "",
+        precision: "",
+        region: "",
+        type: "demandInfo",
+        userId: this.$store.getters.userInfo.userId
+      },
       submitType: "aerialData",
       administrativDivision: "",
       uploadVisible: false,
@@ -459,22 +473,15 @@ export default {
     },
     initForm() {
       this.relustList = [];
+      // this.queryInfo();
+      for (let key in this.form) {
+        if (key === "drones" || key === "drivers") {
+          this.form[key] = [];
+        } else if (key != "type" && key != "userId") {
+          this.form[key] = "";
+        }
+      }
       this.queryInfo();
-      this.form = {
-        aerialDataType: "",
-        area: "",
-        businessFields: "",
-        date: "",
-        drones: [],
-        drivers: [],
-        name: "",
-        notes: "",
-        resolution: "",
-        precision: "",
-        region: "",
-        userId: this.$store.getters.userInfo.userId
-      };
-      this.form.type = this.form.type ? this.form.type : "demandInfo";
     },
     releaseInfo() {
       this.isLoading = true;
