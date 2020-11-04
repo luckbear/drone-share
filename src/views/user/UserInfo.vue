@@ -159,6 +159,12 @@
           type="primary"
           @click="handleModify('form')"
         >提交</el-button>
+        <el-button
+          class="submit-btn"
+          :disabled="!isEdit"
+          type="primary"
+          @click="bindCompany(false)"
+        >取消</el-button>
       </div>
     </el-form>
   </div>

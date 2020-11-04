@@ -393,7 +393,12 @@ export default {
   },
 
   methods: {
-    queryInfo() {
+    queryInfo(val) {
+      if (
+        (this.submitType == "drivers" || this.submitType == "drones") &&
+        this.form.type == "supplyInfo"
+      )
+        return;
       let _form = { ...this.form };
       delete this.administrativDivision.centerLat;
       delete this.administrativDivision.centerLon;
@@ -500,6 +505,13 @@ export default {
           this.isLoading = false;
           if (res.code == 1) {
             // this.initForm();
+            for (let key in this.form) {
+              if (key === "drones" || key === "drivers") {
+                this.form[key] = [];
+              } else if (key != "type" && key != "userId") {
+                this.form[key] = "";
+              }
+            }
           }
         })
         .catch(err => {

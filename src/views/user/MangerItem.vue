@@ -105,7 +105,7 @@ export default {
     },
     fotmatColumn(row, column) {
       if (column.property == "buyTime") {
-        if (row["buyTime"]) {
+        if (row["buyTime"] && row["buyTime"].length > 9) {
           return row["buyTime"].slice(0, 10);
         } else {
           return "";
