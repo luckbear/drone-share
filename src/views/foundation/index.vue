@@ -3,7 +3,9 @@
     <div class="f-container">
       <div class="cell-container">
         <div class="cell-pane">
-          <div class="cell"></div>
+          <div class="cell">
+              <fly-chart/>
+          </div>
         </div>
         <div class="cell-pane">
           <div class="cell"></div>
@@ -17,13 +19,17 @@
           <div class="cell"></div>
         </div>
       </div>
-      <!-- <div class="cell-container"></div> -->
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import FlyChart from './FlyChart.vue';
+export default {
+    components:{
+        FlyChart
+    }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -56,6 +62,7 @@ export default {};
         box-shadow: 0px 0px 38px 2px rgba(155, 155, 167, 0.49);
         height: 100%;
         border-radius: 8px;
+        overflow: hidden;
       }
     }
   }
