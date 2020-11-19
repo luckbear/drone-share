@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const model = require('../model');
 
-// model.sync();
+model.sync();
 
 let responseData = {};
 

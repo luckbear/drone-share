@@ -7,8 +7,5 @@ module.exports = db.defineModel('employments', {
     authOrg: db.STRING(100),
     categoryGrade: db.STRING(100),
     levelGrade: db.STRING(100),
-    info: db.STRING(100),
-    emCode: db.STRING(100),
-    releaseDate: db.STRING(100),
     driverGrade: db.STRING(100)
 });
