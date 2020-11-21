@@ -75,6 +75,29 @@ export function getInfoList(pageNum, pageSize, data) {
   });
 }
 
+export function getClassList(pageNum, pageSize) {
+  return request({
+    url: "/classList/",
+  });
+}
+
+export function getEmList(pageNum, pageSize) {
+  return request({
+    url: "/emList/",
+    method: "get",
+
+  });
+}
+export function getTeacherList(pageNum, pageSize) {
+  return request({
+    url: "/teacherList/",
+    method: "get",
+
+  });
+}
+
+
+
 export function logout() {
   return request({
     url: "/vue-admin-template/user/logout",

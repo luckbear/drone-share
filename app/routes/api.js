@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const model = require('../model');
 
-model.sync();
+// model.sync();
 
 let responseData = {};
 
@@ -42,7 +42,7 @@ async function getTeacherList(req, res, next) {
 
 router.get('/graduateList', getGraduateList);
 router.get('/emList', getEmList);
-router.get('/classList', getEmList);
-router.get('/teacherList', getEmList);
+router.get('/classList', getClassList);
+router.get('/teacherList', getTeacherList);
 
 module.exports = router;
