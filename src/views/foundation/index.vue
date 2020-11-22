@@ -8,12 +8,16 @@
           </div>
         </div>
         <div class="cell-pane">
-          <div class="cell"></div>
+          <div class="cell">
+            <div class="title" style="background-color:#f1f2f5;padding-bottom:15px;">学员就业行业分布</div>
+            <v-pie :data="emPercent"></v-pie>
+          </div>
         </div>
       </div>
       <div class="cell-container">
         <div class="cell-pane">
           <div class="cell">
+            <div class="title">开班信息</div>
             <el-table :data="classData" style="width: 100%" height="100%">
               <el-table-column prop="code" label="编号"> </el-table-column>
               <el-table-column prop="beginDate" label="开班日期">
@@ -31,6 +35,7 @@
         </div>
         <div class="cell-pane">
           <div class="cell">
+            <div class="title">学员就业分布情况</div>
             <el-table :data="emData" style="width: 100%" height="100%">
               <el-table-column prop="code" label="编号"></el-table-column>
               <el-table-column prop="name" label="姓名"></el-table-column>
@@ -81,10 +86,12 @@
 
 <script>
 import FlyChart from "./FlyChart.vue";
-import { getClassList, getEmList, getTeacherList } from "../../api/user.js";
+import { getClassList, getEmList, getTeacherList ,getEmPercentList} from "../../api/user.js";
+import VPie from 'v-charts/lib/pie.common';
 export default {
   components: {
     FlyChart,
+    VPie
   },
   data() {
     return {
@@ -92,9 +99,13 @@ export default {
       classData: [],
       emData: [],
       teacherData: [],
+      emPercent:{
+        columns:['emIndustry','count'],
+        rows:[]
+      }
     };
   },
-
+  
   async created() {
     const classRes = await getClassList();
     if (classRes.code == 0) {
@@ -109,6 +120,11 @@ export default {
     const teacherRes = await getTeacherList();
     if (teacherRes.code == 0) {
       this.teacherData = teacherRes.data;
+    }
+
+    const emPercentRes = await getEmPercentList();
+    if (emPercentRes.code == 0) {
+      this.emPercent.rows = emPercentRes.data;
     }
   },
 };
@@ -153,6 +169,14 @@ export default {
         height: 100%;
         border-radius: 8px;
         overflow: hidden;
+        .title{
+          height: 30px;
+          line-height: 30px;
+          text-align: center;
+          padding-top: 3px;
+          background-color: #fff;
+          color: #909399;
+        }
         .teacher-info {
           position: absolute;
           padding: 0 20px;

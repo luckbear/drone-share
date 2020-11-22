@@ -95,6 +95,12 @@ export function getTeacherList(pageNum, pageSize) {
 
   });
 }
+export function getEmPercentList(pageNum, pageSize) {
+  return request({
+    url: "/emPercentList/",
+    method: "get",
+  });
+}
 
 
 

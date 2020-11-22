@@ -7,6 +7,8 @@ module.exports = db.defineModel('graduates', {
     licenseCode: db.STRING(100),
     authOrg: db.STRING(100),
     isEmployment: db.STRING(100),
-    emCode: db.STRING(100),
-    emIndustry: db.STRING(100)
+    city: db.STRING(100),
+    emIndustry: db.STRING(100),
+    lng: db.STRING(100),
+    lat: db.STRING(100),
 });
