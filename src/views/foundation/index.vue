@@ -107,7 +107,7 @@ export default {
   },
   
   async created() {
-    const classRes = await getClassList();
+    const classRes = await getClassList();;
     if (classRes.code == 0) {
       this.classData = classRes.data;
     }

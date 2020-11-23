@@ -18,19 +18,19 @@ router.use(function (req, res, next) {
 
 
 async function getGraduateList(req, res, next) {
-    const graduateList = await model.Graduates.findAll();
-    responseData.data = graduateList;
-    res.json(responseData);
-
-    // const graduateList = await model.Graduates.findAll(
-    //     {
-    //         attributes: ['city', [sequelize.fn('COUNT', sequelize.col('city')),'count']],
-    //         group: 'city',
-    //         raw: true
-    //     }
-    // );
+    // const graduateList = await model.Graduates.findAll();
     // responseData.data = graduateList;
     // res.json(responseData);
+
+    const graduateList = await model.Graduates.findAll(
+        {
+            attributes: ['city','lat' ,'lng',[sequelize.fn('COUNT', sequelize.col('city')),'count']],
+            group: ['city','lat','lng'],
+            raw: true
+        }
+    );
+    responseData.data = graduateList;
+    res.json(responseData);
 }
 
 async function getEmList(req, res, next) {

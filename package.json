@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "axios": "0.18.1",
+    "cors": "^2.8.5",
     "echarts": "^4.9.0",
     "ele-table-editor": "^0.4.3",
     "element-ui": "2.13.0",
