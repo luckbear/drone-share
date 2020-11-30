@@ -23,52 +23,24 @@
         <div class="cell-pane">
           <div class="cell">
             <div class="title">开班信息</div>
-            <el-table :data="classData" style="width: 100%" height="100%">
-              <el-table-column prop="code" label="编号"> </el-table-column>
-              <el-table-column prop="beginDate" label="开班日期">
-              </el-table-column>
-              <el-table-column prop="duration" label="授课时长">
-              </el-table-column>
-              <el-table-column prop="title" label="标题"> </el-table-column>
-              <el-table-column prop="authOrg" label="授权机构">
-              </el-table-column>
-              <el-table-column prop="info" label="信息内容"> </el-table-column>
-              <el-table-column prop="releaseDate" label="发布日期">
-              </el-table-column>
-            </el-table>
+            <info-item infoType="class"></info-item>
           </div>
         </div>
         <div class="cell-pane">
           <div class="cell">
             <div class="title">学员就业分布情况</div>
-            <el-table :data="emData" style="width: 100%" height="100%">
-              <el-table-column prop="code" label="编号"></el-table-column>
-              <el-table-column prop="name" label="姓名"></el-table-column>
-              <el-table-column prop="phone" label="联系方式"> </el-table-column>
-              <el-table-column
-                prop="authOrg"
-                label="授权机构"
-              ></el-table-column>
-              <el-table-column
-                prop="categoryGrade"
-                label="类别等级"
-              ></el-table-column>
-              <el-table-column
-                prop="levelGrade"
-                label="级别等级"
-              ></el-table-column>
-              <el-table-column
-                prop="driverGrade"
-                label="驾驶员等级"
-              ></el-table-column>
-            </el-table>
+            <info-item infoType="em"></info-item>
           </div>
         </div>
       </div>
       <div class="img-wrapper">
         <div class="cell">
           <ul>
-            <li v-for="item in teacherData.slice(0, 9)" :key="item.code" @click="openTeachers">
+            <li
+              v-for="item in teacherData.slice(0, 9)"
+              :key="item.code"
+              @click="openTeachers"
+            >
               <img :src="`${url + item.imgPath}.jpeg`" alt="" />
             </li>
           </ul>
@@ -87,10 +59,12 @@ import {
   getEmPercentList,
 } from "../../api/user.js";
 import VPie from "v-charts/lib/pie.common";
+import InfoItem from "../info/InfoItem";
 export default {
   components: {
     FlyChart,
     VPie,
+    InfoItem,
   },
   data() {
     return {
@@ -106,15 +80,15 @@ export default {
   },
 
   async created() {
-    const classRes = await getClassList();
-    if (classRes.code == 0) {
-      this.classData = classRes.data;
-    }
+    // const classRes = await getClassList();
+    // if (classRes.code == 0) {
+    //   this.classData = classRes.data;
+    // }
 
-    const emRes = await getEmList();
-    if (emRes.code == 0) {
-      this.emData = emRes.data;
-    }
+    // const emRes = await getEmList();
+    // if (emRes.code == 0) {
+    //   this.emData = emRes.data;
+    // }
 
     const teacherRes = await getTeacherList();
     if (teacherRes.code == 0) {
@@ -126,11 +100,11 @@ export default {
       this.emPercent.rows = emPercentRes.data;
     }
   },
-  methods:{
-    openTeachers(){
-      this.$router.push({path:'teachers'})
-    }
-  }
+  methods: {
+    openTeachers() {
+      this.$router.push({ path: "teachers" });
+    },
+  },
 };
 </script>
 

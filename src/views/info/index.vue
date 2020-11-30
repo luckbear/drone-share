@@ -12,7 +12,11 @@
         <div class="cell-pane">
           <div class="cell">
             <div class="title">贵州行业比例</div>
-            <v-pie :data="industryPercent" height="100%"></v-pie>
+            <v-pie
+              :data="industryPercent"
+              style="height: 100%"
+              :settings="{ offsetY: 130 }"
+            ></v-pie>
           </div>
         </div>
       </div>
@@ -42,12 +46,7 @@
         <div class="cell-pane">
           <div class="cell">
             <div class="title">专家库</div>
-            <el-table :data="expertData" style="width: 100%" height="100%" size="mini">
-              <el-table-column prop="code" label="编号" width="70px"> </el-table-column>
-              <el-table-column prop="name" label="姓名"> </el-table-column>
-              <el-table-column prop="company" label="单位"> </el-table-column>
-              <el-table-column prop="grade" label="职称"> </el-table-column>
-            </el-table>
+            <info-item infoType="expert"></info-item>
           </div>
         </div>
       </div>
@@ -139,7 +138,7 @@ export default {
           padding-top: 3px;
           background-color: #fff;
           color: #909399;
-        //   border-bottom: 1px solid rgba(204, 204, 204, 0.363);
+          //   border-bottom: 1px solid rgba(204, 204, 204, 0.363);
         }
       }
     }
