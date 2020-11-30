@@ -144,6 +144,12 @@ export const constantRoutes = [
     component: () => import("@/views/info/index"),
     meta: { title: "行业信息", icon: "info", }
   },
+  {
+    path: "/teachers",
+    hidden:true,
+    component: () => import("@/views/foundation/Teachers.vue"),
+    meta: { title: "", icon: "info", }
+  },
   // {
   //   path: '/nested',
   //   component: Layout,

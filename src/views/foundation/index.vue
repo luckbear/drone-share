@@ -9,7 +9,12 @@
         </div>
         <div class="cell-pane">
           <div class="cell">
-            <div class="title" style="background-color:#f1f2f5;padding-bottom:15px;">学员就业行业分布</div>
+            <div
+              class="title"
+              style="background-color: #f1f2f5; padding-bottom: 15px"
+            >
+              学员就业行业分布
+            </div>
             <v-pie :data="emPercent"></v-pie>
           </div>
         </div>
@@ -57,28 +62,17 @@
                 label="驾驶员等级"
               ></el-table-column>
             </el-table>
-            <!-- <el-carousel :style="{ height: '100%' }">
-              <el-carousel-item
-                v-for="item in teacherData"
-                :key="item.name"
-                :style="{ height: '100%' }"
-              >
-                <div class="teacher-info">
-                  <p>姓名：{{ item.name || "" }}</p>
-                  <p>教龄：{{ item.teachingAge || "" }} (年)</p>
-                  <p>授课类型：{{ item.classType || "" }}</p>
-                </div>
-                <img
-                  :src="url + (item.imgPath > 3 ? '1' : item.imgPath) + '.jpeg'"
-                  alt=""
-                />
-              </el-carousel-item>
-            </el-carousel> -->
           </div>
         </div>
       </div>
       <div class="img-wrapper">
-        <div class="cell"></div>
+        <div class="cell">
+          <ul>
+            <li v-for="item in teacherData.slice(0, 9)" :key="item.code" @click="openTeachers">
+              <img :src="`${url + item.imgPath}.jpeg`" alt="" />
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -86,12 +80,17 @@
 
 <script>
 import FlyChart from "./FlyChart.vue";
-import { getClassList, getEmList, getTeacherList ,getEmPercentList} from "../../api/user.js";
-import VPie from 'v-charts/lib/pie.common';
+import {
+  getClassList,
+  getEmList,
+  getTeacherList,
+  getEmPercentList,
+} from "../../api/user.js";
+import VPie from "v-charts/lib/pie.common";
 export default {
   components: {
     FlyChart,
-    VPie
+    VPie,
   },
   data() {
     return {
@@ -99,15 +98,15 @@ export default {
       classData: [],
       emData: [],
       teacherData: [],
-      emPercent:{
-        columns:['emIndustry','count'],
-        rows:[]
-      }
+      emPercent: {
+        columns: ["emIndustry", "count"],
+        rows: [],
+      },
     };
   },
-  
+
   async created() {
-    const classRes = await getClassList();;
+    const classRes = await getClassList();
     if (classRes.code == 0) {
       this.classData = classRes.data;
     }
@@ -127,6 +126,11 @@ export default {
       this.emPercent.rows = emPercentRes.data;
     }
   },
+  methods:{
+    openTeachers(){
+      this.$router.push({path:'teachers'})
+    }
+  }
 };
 </script>
 
@@ -169,7 +173,7 @@ export default {
         height: 100%;
         border-radius: 8px;
         overflow: hidden;
-        .title{
+        .title {
           height: 30px;
           line-height: 30px;
           text-align: center;
@@ -177,31 +181,34 @@ export default {
           background-color: #fff;
           color: #909399;
         }
-        .teacher-info {
-          position: absolute;
-          padding: 0 20px;
-          color: #fff;
-          background-color: rgba(99, 117, 122, 0.436);
-          border-radius: 5px;
-          right: 20px;
-          bottom: 20px;
-        }
-        img {
-          height: 100%;
-          width: 100%;
-        }
       }
     }
   }
   .img-wrapper {
     flex: 1;
-    padding: 10px;
-    padding-top: 0px;
+    overflow: hidden;
     .cell {
       box-shadow: 0px 0px 38px 2px rgba(155, 155, 167, 0.49);
       height: 100%;
-      border-radius: 8px;
+      padding: 0 10px 10px;
       overflow: hidden;
+      ul {
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow-x: auto;
+        li {
+          list-style: none;
+          height: 100%;
+          float: left;
+          cursor: pointer;
+        }
+        img {
+          height: 100%;
+        }
+      }
     }
   }
 }

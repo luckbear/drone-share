@@ -24,8 +24,8 @@ async function getGraduateList(req, res, next) {
 
     const graduateList = await model.Graduates.findAll(
         {
-            attributes: ['city','lat' ,'lng',[sequelize.fn('COUNT', sequelize.col('city')),'count']],
-            group: ['city','lat','lng'],
+            attributes: ['city', 'lat', 'lng', [sequelize.fn('COUNT', sequelize.col('city')), 'count']],
+            group: ['city', 'lat', 'lng'],
             raw: true
         }
     );
@@ -54,12 +54,60 @@ async function getTeacherList(req, res, next) {
 async function getEmPercentList(req, res, next) {
     const emPercentList = await model.Graduates.findAll(
         {
-            attributes: ['emIndustry', [sequelize.fn('COUNT', sequelize.col('emIndustry')),'count']],
+            attributes: ['emIndustry', [sequelize.fn('COUNT', sequelize.col('emIndustry')), 'count']],
             group: 'emIndustry',
             raw: true
         }
     );
     responseData.data = emPercentList;
+    res.json(responseData);
+}
+
+async function getIndustryPercentList(req, res, next) {
+    const emIndustryPercentList = await model.Companies.findAll(
+        {
+            attributes: ['comType', [sequelize.fn('COUNT', sequelize.col('comType')), 'count']],
+            group: 'comType',
+            raw: true
+        }
+    );
+    responseData.data = emIndustryPercentList;
+    res.json(responseData);
+}
+
+async function getCompanyList(req, res, next) {
+    const companyList = await model.Companies.findAll(
+        {
+            attributes: ['city', 'lat', 'lng', [sequelize.fn('COUNT', sequelize.col('city')), 'count']],
+            group: ['city', 'lat', 'lng'],
+            raw: true
+        }
+    );
+    responseData.data = companyList;
+    res.json(responseData);
+}
+
+async function getExpertList(req, res, next) {
+    const expertList = await model.Experts.findAll();
+    responseData.data = expertList;
+    res.json(responseData);
+}
+
+async function getIndustrieList(req, res, next) {
+    const industryList = await model.Industries.findAll();
+    responseData.data = industryList;
+    res.json(responseData);
+}
+
+async function getLawList(req, res, next) {
+    const lawList = await model.Law.findAll();
+    responseData.data = lawList;
+    res.json(responseData);
+}
+
+async function getNewsList(req, res, next) {
+    const newsList = await model.News.findAll();
+    responseData.data = newsList;
     res.json(responseData);
 }
 
@@ -70,5 +118,11 @@ router.get('/emList', getEmList);
 router.get('/classList', getClassList);
 router.get('/teacherList', getTeacherList);
 router.get('/emPercentList', getEmPercentList);
+router.get('/industryPercentList', getIndustryPercentList);
+router.get('/companyList', getCompanyList);
+router.get('/expertList', getExpertList);
+router.get('/industryList', getIndustrieList);
+router.get('/lawList', getLawList);
+router.get('/newsList', getNewsList);
 
 module.exports = router;
