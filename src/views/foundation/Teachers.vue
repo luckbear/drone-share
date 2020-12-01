@@ -1,16 +1,11 @@
 <template>
   <div class="app-container">
-    <div
-      class="wrap"
-      v-for="item in teacherData"
-      :key="item.code"
-      style="width: 800px; height: 600px"
-    >
+    <div class="wrap" v-for="item in teacherData" :key="item.code">
       <div class="img-wrap">
         <img :src="`${url + item.imgPath}.jpeg`" alt="" />
       </div>
       <div class="instruction">
-          <p>{{item.name}}</p>
+        <p>{{ item.name }}</p>
       </div>
     </div>
   </div>
@@ -36,19 +31,24 @@ export default {
 
 <style lang="scss" scoped>
 .app-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
   .wrap {
     display: flex;
-    margin: auto;
+    width: 400px;
+    height: 200px;
     .img-wrap {
       height: 100%;
-      width: 100%;
+      width: 50%;
       img {
         height: 100%;
         width: 100%;
       }
     }
-    .instruction{
-        // width: ;
+    .instruction {
+      width: 50%;
+      background-color: rgba(189, 182, 182, 0.151);
     }
   }
 }

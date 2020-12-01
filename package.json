@@ -28,6 +28,7 @@
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
+    "pdfjs-dist": "^2.3.200",
     "sequelize": "^6.3.5",
     "shpjs": "^3.4.3",
     "v-chart": "^1.0.0",

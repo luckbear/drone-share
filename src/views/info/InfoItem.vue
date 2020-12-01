@@ -11,11 +11,21 @@
       </el-button>
     </div>
 
-    <el-dialog :visible.sync="isOpenNews" width="70%" top="0">
+    <el-dialog
+      :visible.sync="isOpenNews"
+      width="70%"
+      top="0"
+    >
       <iframe
         :src="`${baseUrl}static/${infoType}/${pdfFileName}.pdf`"
         style="width: 100%; height: 100%"
       ></iframe>
+      <!-- <div
+        style="margin: auto; height: 100%; width: 100%"
+        id="canvas-container"
+      >
+        <canvas id="pdf-canvas"></canvas>
+      </div> -->
     </el-dialog>
 
     <el-table
@@ -88,6 +98,9 @@
 <script>
 const baseUrl = process.env.BASE_URL;
 import request from "../../utils/request.js";
+const PDFJS = require("pdfjs-dist");
+PDFJS.GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.entry");
+// PDFJS.GlobalWorkerOptions.workerSrc = "https://cdn.bootcss.com/pdf.js/2.2.228/pdf.worker.js";
 export default {
   props: ["infoType"],
   data() {
@@ -126,9 +139,13 @@ export default {
       };
       const url = `/${this.infoType}List`;
       const method = "get";
-      const res = await request({ url, method, params });
-      this.infoList = res.data;
-      this.total = res.count;
+      try {
+        const res = await request({ url, method, params });
+        this.infoList = res.data;
+        this.total = res.count;
+      } catch (error) {
+        console.log(error);
+      }
     },
     handleSizeChange(size) {
       this.pageSize = size;
@@ -140,8 +157,47 @@ export default {
     },
 
     openDialog(row, col) {
-      this.pdfFileName = row.content;
+      // this.pdfFileName = row.content;
+      this.pdfFileName = "1";
       this.isOpenNews = true;
+
+      // const url = `${baseUrl}static/${this.infoType}/${this.pdfFileName}.pdf`;
+
+      // PDFJS.getDocument(url)
+      //   .then((pdf) => {
+      //     return pdf.getPage(1);
+      //   })
+      //   .then((page) => {
+      //     // 设置展示比例
+      //     const scale = 2;
+      //     // 获取pdf尺寸
+      //     const viewport = page.getViewport(scale);
+      //     // 获取需要渲染的元素
+      //     const canvas = document.getElementById("pdf-canvas");
+      //     const containerDiv = document.getElementById("canvas-container");
+      //     // const height = containerDiv
+      //     const context = canvas.getContext("2d");
+      //     const devicePixelRatio = window.devicePixelRatio || 1;
+      //     const backingStoreRatio =
+      //       context.webkitBackingStorePixelRatio ||
+      //       context.mozBackingStorePixelRatio ||
+      //       context.msBackingStorePixelRatio ||
+      //       context.oBackingStorePixelRatio ||
+      //       context.backingStorePixelRatio ||
+      //       1;
+      //     const ratio = devicePixelRatio / backingStoreRatio;
+      //     // canvas.height = viewport.height * ratio;
+      //     // canvas.width = viewport.width * ratio;
+      //     // canvas.style.height = viewport.height + "px";
+      //     // canvas.style.width = viewport.width + "px";
+      //     canvas.height = viewport.height;
+      //     canvas.width = viewport.width;
+      //     const renderContext = {
+      //       canvasContext: context,
+      //       viewport: viewport,
+      //     };
+      //     page.render(renderContext);
+      //   });
     },
   },
 };
@@ -154,7 +210,7 @@ export default {
     height: 50px;
   }
   .el-dialog__body {
-    height: calc(100vh);
+    height: calc(100vh - 50px);
   }
 }
 </style>

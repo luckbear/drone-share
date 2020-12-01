@@ -68,7 +68,6 @@ export default {
   data() {
     return {
       iframeUrl,
-      expertData: [],
       industryPercent: {
         columns: ["comType", "count"],
         rows: [],
@@ -77,13 +76,13 @@ export default {
   },
 
   async created() {
-    const res = await request.get("/industryPercentList");
-    if (res.code === 0) {
-      this.industryPercent.rows = res.data;
-    }
-    const expertRes = await request.get("/expertList");
-    if (res.code === 0) {
-      this.expertData = expertRes.data;
+    try {
+      const res = await request.get("/industryPercentList");
+      if (res.code === 0) {
+        this.industryPercent.rows = res.data;
+      }
+    } catch (error) {
+      console.log(error);
     }
   },
 };
