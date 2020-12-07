@@ -90,7 +90,7 @@ export default {
     //   this.emData = emRes.data;
     // }
 
-    const teacherRes = await getTeacherList();
+    const teacherRes = await getTeacherList('');
     if (teacherRes.code == 0) {
       this.teacherData = teacherRes.data;
     }

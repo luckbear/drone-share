@@ -47,7 +47,7 @@ async function getClassList(req, res, next) {
   const offset = (req.query.pageNum - 1) * limit;
   const keyWord = req.query.keyWord;
   const where = {};
-  // keyWord && Object.assign(where, { title: { [Op.substring]: keyWord } });
+  keyWord && Object.assign(where, { title: { [Op.substring]: keyWord } });
   const industryList = await model.Classes.findAndCountAll({ where, limit, offset });
   responseData.data = industryList.rows;
   responseData.count = industryList.count;
@@ -59,7 +59,7 @@ async function getEmList(req, res, next) {
   const offset = (req.query.pageNum - 1) * limit;
   const keyWord = req.query.keyWord;
   const where = {};
-  // keyWord && Object.assign(where, { title: { [Op.substring]: keyWord } });
+  keyWord && Object.assign(where, { name: { [Op.substring]: keyWord } });
   const industryList = await model.Employments.findAndCountAll({ where, limit, offset });
   responseData.data = industryList.rows;
   responseData.count = industryList.count;
@@ -67,8 +67,15 @@ async function getEmList(req, res, next) {
 }
 
 async function getTeacherList(req, res, next) {
-  const teacherList = await model.Teachers.findAll();
-  responseData.data = teacherList;
+  console.log(req.query);
+  const limit = Number(req.query.pageSize);
+  const offset = (req.query.pageNum - 1) * limit;
+  const keyWord = req.query.keyWord.trim();
+  const where = {};
+  keyWord && Object.assign(where, { name: { [Op.substring]: keyWord } });
+  const industryList = await model.Teachers.findAndCountAll({ where, limit, offset });
+  responseData.data = industryList.rows;
+  responseData.count = industryList.count;
   res.json(responseData);
 }
 

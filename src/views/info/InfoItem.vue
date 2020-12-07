@@ -1,21 +1,18 @@
 <template>
   <div class="container">
-    <div class="search" v-if="tableType != 'fundation'">
+    <!-- <div class="search" v-if="tableType != 'fundation'"> -->
+    <div class="search">
       <el-input
         v-model="keyWord"
         size="mini"
-        :placeholder="`输入${tableType == 'info' ? '标题' : '姓名'}关键字`"
+        :placeholder="输入关键字搜索"
       ></el-input>
       <el-button type="primary" size="mini" @click="getInfoList">
         搜索
       </el-button>
     </div>
 
-    <el-dialog
-      :visible.sync="isOpenNews"
-      width="70%"
-      top="0"
-    >
+    <el-dialog :visible.sync="isOpenNews" width="70%" top="0">
       <iframe
         :src="`${baseUrl}static/${infoType}/${pdfFileName}.pdf`"
         style="width: 100%; height: 100%"
