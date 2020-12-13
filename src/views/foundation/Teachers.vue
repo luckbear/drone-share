@@ -26,7 +26,7 @@ import { getTeacherList } from "@/api/user";
 export default {
   data() {
     return {
-      url: process.env.BASE_URL + "static/" + "images/",
+      url: process.env.BASE_URL + "static/" + "teacher/",
       teacherData: [],
       keyWord: "",
     };

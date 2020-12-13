@@ -5,7 +5,7 @@
       <el-input
         v-model="keyWord"
         size="mini"
-        :placeholder="输入关键字搜索"
+        placeholder="输入关键字搜索"
       ></el-input>
       <el-button type="primary" size="mini" @click="getInfoList">
         搜索
@@ -25,6 +25,18 @@
       </div> -->
     </el-dialog>
 
+    <el-dialog :visible.sync="isOpenExpert" class="expert">
+      <div class="wrap">
+        <div class="content">
+          <img :src="`${baseUrl}static/expert/1.jpeg`" alt="" />
+          <p>姓名：{{ expertInfo.name }}</p>
+          <p>单位：{{ expertInfo.company }}</p>
+          <p>职称：{{ expertInfo.grade }}</p>
+          <p>介绍：{{ expertInfo.instruction }}</p>
+        </div>
+      </div>
+    </el-dialog>
+
     <el-table
       :data="infoList"
       size="mini"
@@ -39,7 +51,12 @@
     </el-table>
 
     <template v-if="tableType == 'expert'">
-      <el-table :data="infoList" size="mini" height="100%">
+      <el-table
+        :data="infoList"
+        size="mini"
+        height="100%"
+        @row-click="openExpert"
+      >
         <el-table-column prop="code" label="编号" width="70px">
         </el-table-column>
         <el-table-column prop="name" label="姓名"> </el-table-column>
@@ -109,7 +126,9 @@ export default {
       keyWord: "",
       total: 0,
       isOpenNews: false,
+      isOpenExpert: false,
       pdfFileName: "",
+      expertInfo: "",
     };
   },
   created() {
@@ -151,6 +170,11 @@ export default {
     handleCurrentChange(page) {
       this.pageNum = page;
       this.getInfoList();
+    },
+
+    openExpert(row) {
+      this.expertInfo = row;
+      this.isOpenExpert = true;
     },
 
     openDialog(row, col) {
@@ -209,6 +233,12 @@ export default {
   .el-dialog__body {
     height: calc(100vh - 50px);
   }
+
+  .expert {
+    .el-dialog__body {
+      height: 50vh;
+    }
+  }
 }
 </style>
 <style lang="scss" scoped>
@@ -227,6 +257,25 @@ export default {
     z-index: 1000;
     .el-input {
       width: 120px;
+    }
+  }
+  .expert {
+    .wrap {
+      padding: 0 20px;
+      height: 100%;
+      overflow:auto;
+      img {
+        width: 200px;
+        height: 100%;
+        float: left;
+        margin-right: 10px;
+      }
+      p {
+        // line-height: 8px;
+        &:last-child{
+          line-height: 25px;
+        }
+      }
     }
   }
 }

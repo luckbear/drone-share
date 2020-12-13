@@ -136,7 +136,7 @@ export default {
           text-align: center;
           padding-top: 3px;
           background-color: #fff;
-          color: #909399;
+          color: #3dc1c7;
           //   border-bottom: 1px solid rgba(204, 204, 204, 0.363);
         }
       }

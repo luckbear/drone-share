@@ -68,7 +68,7 @@ export default {
   },
   data() {
     return {
-      url: process.env.BASE_URL + "static/" + "images/",
+      url: process.env.BASE_URL + "static/" + "teacher/",
       classData: [],
       emData: [],
       teacherData: [],
@@ -153,7 +153,7 @@ export default {
           text-align: center;
           padding-top: 3px;
           background-color: #fff;
-          color: #909399;
+          color: #3dc1c7;
         }
       }
     }
@@ -172,7 +172,7 @@ export default {
         margin: 0;
         padding: 0;
         height: 100%;
-        overflow-x: auto;
+        // overflow-x: scroll;
         li {
           list-style: none;
           height: 100%;
@@ -181,6 +181,7 @@ export default {
         }
         img {
           height: 100%;
+          // display: inline;
         }
       }
     }
