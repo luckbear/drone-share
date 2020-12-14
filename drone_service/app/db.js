@@ -7,9 +7,9 @@ const { host, database, username, password } = config[process.env.NODE_ENV]
 
 console.log('init sequelize...');
 
-function generateId() {
-    return uuid.v4();
-}
+// function generateId() {
+//     return uuid.v4();
+// }
 
 const sequelize = new Sequelize(database, username, password, {
     host: host,
@@ -119,6 +119,6 @@ for (let type of TYPES) {
 }
 
 exp.ID = ID_TYPE;
-exp.generateId = generateId;
+// exp.generateId = generateId;
 
 module.exports = exp;
