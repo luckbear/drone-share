@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const uuid = require('node-uuid');
 
 const config = require('./config')
+
 const { host, database, username, password } = config[process.env.NODE_ENV]
 
 console.log('init sequelize...');

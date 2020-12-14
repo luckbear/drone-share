@@ -88,12 +88,12 @@ export function getEmList(pageNum, pageSize) {
 
   });
 }
-export function getTeacherList(keyWord) {
+export function getTeacherList(keyWord, pageSize) {
   return request({
     url: "/teacherList",
     method: "get",
     params: {
-      pageNum:1, pageSize:50, keyWord
+      pageNum: 1, pageSize, keyWord
     }
   });
 }

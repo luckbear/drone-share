@@ -14,7 +14,7 @@
 
     <el-dialog :visible.sync="isOpenNews" width="70%" top="0">
       <iframe
-        :src="`${baseUrl}static/${infoType}/${pdfFileName}.pdf`"
+        :src="`${baseUrl}static/${infoType}/${pdfFileName}`"
         style="width: 100%; height: 100%"
       ></iframe>
       <!-- <div
@@ -28,11 +28,11 @@
     <el-dialog :visible.sync="isOpenExpert" class="expert">
       <div class="wrap">
         <div class="content">
-          <img :src="`${baseUrl}static/expert/1.jpeg`" alt="" />
+          <img :src="`${baseUrl}static/expert/${expertInfo.imgPath}`" alt="" />
           <p>姓名：{{ expertInfo.name }}</p>
           <p>单位：{{ expertInfo.company }}</p>
           <p>职称：{{ expertInfo.grade }}</p>
-          <p>介绍：{{ expertInfo.instruction }}</p>
+          <p>介绍：{{ expertInfo.introduction }}</p>
         </div>
       </div>
     </el-dialog>
@@ -48,6 +48,7 @@
       <el-table-column prop="title" label="标题"> </el-table-column>
       <el-table-column prop="date" label="时间"> </el-table-column>
       <el-table-column prop="author" label="作者"> </el-table-column>
+      <!-- <el-table-column prop="attachment" label="附件"> </el-table-column> -->
     </el-table>
 
     <template v-if="tableType == 'expert'">
@@ -178,8 +179,14 @@ export default {
     },
 
     openDialog(row, col) {
-      // this.pdfFileName = row.content;
-      this.pdfFileName = "1";
+      this.pdfFileName = row.content;
+      if (!this.pdfFileName) {
+        this.$message({
+          message: "没有对应文章详情！",
+          duration: 1 * 1000,
+        });
+        return;
+      }
       this.isOpenNews = true;
 
       // const url = `${baseUrl}static/${this.infoType}/${this.pdfFileName}.pdf`;
@@ -263,7 +270,7 @@ export default {
     .wrap {
       padding: 0 20px;
       height: 100%;
-      overflow:auto;
+      overflow: auto;
       img {
         width: 200px;
         height: 100%;
@@ -272,7 +279,7 @@ export default {
       }
       p {
         // line-height: 8px;
-        &:last-child{
+        &:last-child {
           line-height: 25px;
         }
       }

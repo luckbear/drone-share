@@ -7,13 +7,13 @@
     <div class="content">
       <div class="wrap" v-for="item in teacherData" :key="item.code">
         <div class="img-wrap">
-          <img :src="`${url + item.imgPath}.jpeg`" alt="" />
+          <img :src="`${url + item.imgPath}`" alt="" />
         </div>
-        <div class="instruction">
+        <div class="introduction">
           <p><span>姓名:</span>{{ item.name }}</p>
           <p><span>教龄:</span>{{ item.teachingAge }}</p>
           <p><span>授课类型:</span>{{ item.classType }}</p>
-          <p><span>简介:</span>{{ item.instruction }}</p>
+          <p><span>简介:</span>{{ item.introduction }}</p>
         </div>
       </div>
     </div>
@@ -37,7 +37,7 @@ export default {
   methods: {
     async getData() {
       try {
-        const teacherRes = await getTeacherList(this.keyWord);
+        const teacherRes = await getTeacherList(this.keyWord,1000);
         if (teacherRes.code == 0) {
           this.teacherData = teacherRes.data;
         }
@@ -73,7 +73,7 @@ export default {
           width: 100%;
         }
       }
-      .instruction {
+      .introduction {
         width: 50%;
         padding: 10px;
         background-color: rgba(189, 182, 182, 0.151);

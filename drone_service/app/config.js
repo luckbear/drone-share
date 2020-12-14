@@ -6,9 +6,9 @@ module.exports = {
         password: '12345678',
     },
     production: {
-        host: '',
-        database: '',
-        username: '',
-        password: '',
+        host: '118.126.89.216',
+        database: 'drone_db',
+        username: 'root',
+        password: '!Aa123456',
     },
 }

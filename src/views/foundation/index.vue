@@ -37,11 +37,11 @@
         <div class="cell">
           <ul>
             <li
-              v-for="item in teacherData.slice(0, 9)"
+              v-for="item in teacherData"
               :key="item.code"
               @click="openTeachers"
             >
-              <img :src="`${url + item.imgPath}.jpeg`" alt="" />
+              <img :src="`${url + item.imgPath}`" alt="" />
             </li>
           </ul>
         </div>
@@ -90,7 +90,7 @@ export default {
     //   this.emData = emRes.data;
     // }
 
-    const teacherRes = await getTeacherList('');
+    const teacherRes = await getTeacherList('',10);
     if (teacherRes.code == 0) {
       this.teacherData = teacherRes.data;
     }

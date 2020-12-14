@@ -6,5 +6,5 @@ module.exports = db.defineModel('teachers', {
     imgPath: db.STRING(100),
     teachingAge: db.STRING(100),
     classType: db.STRING(100),
-    instruction: db.STRING(100)
+    introduction: db.STRING(100)
 });

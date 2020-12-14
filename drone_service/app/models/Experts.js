@@ -5,4 +5,6 @@ module.exports = db.defineModel('experts', {
     name: db.STRING(100),
     company: db.STRING(100),
     grade: db.STRING(100),
+    introduction: db.STRING(100),
+    imgPath: db.STRING(100),
 });
