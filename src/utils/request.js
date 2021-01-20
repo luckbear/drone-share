@@ -11,6 +11,14 @@ const service = axios.create({
   }
 });
 
+const service_data = axios.create({
+  baseURL: process.env.VUE_APP_DATA_API, // url = base url + request url
+  timeout: 180000,
+  headers: {
+    "Content-Type": "application/json"
+  }
+});
+
 service.interceptors.request.use(
   config => {
     if (store.getters.token) {
@@ -65,4 +73,46 @@ service.interceptors.response.use(
   }
 );
 
-export default service;
+
+
+service_data.interceptors.response.use(
+  response => {
+    const res = response.data;
+
+    if (res.code == -1) {
+      Message({
+        message: res.msg,
+        type: "error"
+      });
+    }
+
+    if (res.code == 1) {
+      if (res.msg != "正确响应") {
+        Message({
+          message: res.msg,
+          type: "success"
+        });
+      }
+    }
+
+    return res;
+    // if the custom code is not 20000, it is judged as an error.
+    // if (res.code !== 20000) {
+    //   Message({
+    //     message: res.message || 'Error',
+    //     type: 'error',
+    //     duration: 5 * 1000
+    //   })
+  },
+  error => {
+    console.log("err" + error); // for debug
+    Message({
+      message: error.message,
+      type: "error",
+      duration: 5 * 1000
+    });
+    return Promise.reject(error);
+  }
+);
+
+export {service,service_data};

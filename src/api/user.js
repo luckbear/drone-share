@@ -1,4 +1,4 @@
-import request from "@/utils/request";
+import {service as request,service_data} from "@/utils/request";
 
 export function vv(data) {
   return request({
@@ -76,20 +76,20 @@ export function getInfoList(pageNum, pageSize, data) {
 }
 
 export function getClassList(pageNum, pageSize) {
-  return request({
+  return service_data({
     url: "/classList/",
   });
 }
 
 export function getEmList(pageNum, pageSize) {
-  return request({
+  return service_data({
     url: "/emList/",
     method: "get",
 
   });
 }
 export function getTeacherList(keyWord, pageSize) {
-  return request({
+  return service_data({
     url: "/teacherList",
     method: "get",
     params: {
@@ -98,7 +98,7 @@ export function getTeacherList(keyWord, pageSize) {
   });
 }
 export function getEmPercentList(pageNum, pageSize) {
-  return request({
+  return service_data({
     url: "/emPercentList/",
     method: "get",
   });

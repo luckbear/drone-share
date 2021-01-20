@@ -112,7 +112,7 @@
 
 <script>
 const baseUrl = process.env.BASE_URL;
-import request from "../../utils/request.js";
+import {service_data as request} from "../../utils/request.js";
 const PDFJS = require("pdfjs-dist");
 PDFJS.GlobalWorkerOptions.workerSrc = require("pdfjs-dist/build/pdf.worker.entry");
 // PDFJS.GlobalWorkerOptions.workerSrc = "https://cdn.bootcss.com/pdf.js/2.2.228/pdf.worker.js";

@@ -58,7 +58,7 @@
 const iframeUrl = process.env.BASE_URL + "fly/index2.html";
 import InfoItem from "./InfoItem";
 import VPie from "v-charts/lib/pie.common";
-import request from "../../utils/request.js";
+import {service_data as request} from "../../utils/request.js";
 
 export default {
   components: {
